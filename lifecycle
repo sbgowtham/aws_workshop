@@ -1,0 +1,35 @@
+Lifecycle Policies: Set up automatic transitions from S3 Standard to Glacier for cost optimization.
+
+1. Create (or Use) an Existing S3 Bucket
+aws s3 mb s3://my-lifecycle-demo-bucket-sbg
+
+2. Create a Lifecycle Configuration File
+
+in command prompt 
+
+>> notepad lifecycle.json
+
+{
+  "Rules": [
+    {
+      "ID": "TransitionToGlacierRule",
+      "Prefix": "",
+      "Status": "Enabled",
+      "Transitions": [
+        {
+          "Days": 30,
+          "StorageClass": "GLACIER"
+        }
+      ]
+    }
+  ]
+}
+
+3. Apply the Lifecycle Policy to Your Bucket
+
+aws s3api put-bucket-lifecycle-configuration --bucket my-lifecycle-demo-bucket-sbg  --lifecycle-configuration file://lifecycle.json
+
+4. Verify the Lifecycle Configuration
+aws s3api get-bucket-lifecycle-configuration --bucket my-lifecycle-demo-bucket-sbg
+
+
