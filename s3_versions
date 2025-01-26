@@ -1,0 +1,41 @@
+1. Enable Versioning on a New Bucket
+Create a bucket (or pick an existing one) in the S3 console.
+In the Properties tab, scroll to Bucket Versioning.
+Click Edit, then select Enable, and Save changes.
+
+Alternatively, from the AWS CLI:
+
+Create Bucket 
+aws s3 mb s3://my-versioned-bucket-sbg 
+
+Enable Version 
+
+aws s3api put-bucket-versioning --bucket my-versioned-bucket-sbg --versioning-configuration Status=Enabled
+
+2. Upload an Initial File (Version 1)
+echo "Version 1 content" > example.txt
+aws s3 cp example.txt s3://my-versioned-bucket-sbg/
+
+3. Upload a New Version (Version 2)
+echo "Version 2 content" > example.txt
+aws s3 cp example.txt s3://my-versioned-bucket-sbg/
+
+4. List Object Versions
+aws s3api list-object-versions --bucket my-versioned-bucket-sbg
+
+5. Roll Back to a Previous Version
+aws s3api get-object --bucket my-versioned-bucket-sbg --key example.txt --version-id pQzw53FsRATebtmxUencNbTL.Sc5gbDf rolled_back.txt
+
+aws s3 cp rolled_back.txt s3://my-versioned-bucket-sbg/example.txt
+
+6. (Optional) Demonstrate “Deleting” a Version
+
+If you run a standard 
+aws s3 rm s3://my-versioned-bucket-sbg/example.txt
+S3 adds a delete marker instead of truly removing the old data.
+
+To permanently remove a specific version, you must specify that version’s ID:
+
+aws s3api delete-object --bucket my-versioned-bucket-sbg  --key example.txt  --version-id pQzw53FsRATebtmxUencNbTL.Sc5gbDf
+
+
