@@ -1,0 +1,52 @@
+1. Download & Install the AWS CLI on Windows
+Download the Installer
+
+Go to the AWS CLI official download page (scroll to the Windows installer section). https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+Choose the correct installer for your system (64-bit or 32-bit).
+Run the Installer 
+
+Double-click the downloaded .msi file.
+Follow the on-screen instructions (accept the license, choose install location, etc.).
+After installation, close the installer.
+Verify Installation
+
+Open Command Prompt or PowerShell.
+
+>>aws --version
+
+You should see something like:
+
+aws-cli/2.12.0 Python/3.11.4 Windows/10 ...
+
+If you see a version number, the AWS CLI is successfully installed.
+Alternative: If you have Python installed, you can also install AWS CLI with pip install awscli, but the .msi is often simpler on Windows.
+
+
+Obtain AWS Credentials
+
+Sign in to the AWS Management Console.
+Open the IAM service.
+Create or retrieve an Access Key ID and Secret Access Key for your IAM user (with the appropriate permissions).
+Run 
+
+>>aws configure
+
+In Command Prompt or PowerShell, type:
+
+>>aws configure
+
+You’ll be prompted for:
+AWS Access Key ID
+AWS Secret Access Key
+Default Region Name (e.g., us-east-1, us-west-2)
+Default Output Format (e.g., json)
+Confirm Configuration
+
+The credentials are stored in two files under C:\Users\USERNAME\.aws\:
+credentials (Access key and Secret key)
+config (Region, output format)
+Test the AWS CLI
+
+For example, list all your S3 buckets:
+>>aws s3 ls
+If it shows your buckets, you’re all set!
