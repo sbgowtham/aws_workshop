@@ -59,7 +59,7 @@ Choose the LambdaS3RenameRole you created earlier.
 Click "Create function".
 Add the Python Code:
 
-<< code in github >>
+<< https://github.com/sbgowtham/aws_workshop/blob/main/lambda_code.py >>
 
 
 
