@@ -1,0 +1,99 @@
+Step 1: Create an S3 Bucket
+Navigate to the S3 Console:
+
+Go to the Amazon S3 Console.
+Create a New Bucket:
+
+Click on "Create bucket".
+Bucket Name: Enter a unique name (e.g., my-file-rename-bucket-unique).
+Region: Choose a region close to you (e.g., US East (Ohio) us-east-2).
+Block Public Access: Keep the default settings (block all public access) unless you have specific requirements.
+Click "Create bucket".
+Create Folders (Prefixes):
+
+Inside the bucket, create two folders: uploads/ and renamed/.
+Click on "Add folder".
+Folder Name: Enter uploads.
+Click "Save".
+Repeat to create the renamed folder.
+
+Step 2: Create an IAM Role for Lambda
+Your Lambda function needs permissions to read from and write to the S3 bucket, as well as to write logs to CloudWatch.
+
+Navigate to the IAM Console:
+
+Go to the IAM Console.
+Create a New Role:
+
+Click on "Roles" in the sidebar.
+Click "Create role".
+Select Trusted Entity: Choose "AWS service".
+Use Case: Select "Lambda".
+Click "Next: Permissions".
+Attach Policies:
+
+AWSLambdaBasicExecutionRole: Allows Lambda to write logs to CloudWatch.
+Search for AWSLambdaBasicExecutionRole and check the box.
+AmazonS3FullAccess (for simplicity in this example; for production, consider more restrictive permissions):
+Search for AmazonS3FullAccess and check the box.
+Note: For a more secure setup, create a custom policy that grants only the necessary permissions to your specific bucket.
+Review and Create:
+
+Click "Next: Tags" (optional: add tags if needed).
+Click "Next: Review".
+Role Name: Enter LambdaS3RenameRole.
+Click "Create role".
+
+Step 3: Create the Lambda Function
+Navigate to the Lambda Console:
+
+Go to the AWS Lambda Console.
+Create a New Function:
+
+Click "Create function".
+Function Name: Enter S3FileRenamer.
+Runtime: Choose Python 3.9 (or any other supported Python version).
+Permissions:
+Under "Change default execution role", select "Use an existing role".
+Choose the LambdaS3RenameRole you created earlier.
+Click "Create function".
+Add the Python Code:
+
+<< code in github >>
+
+
+
+Step 4: Configure S3 to Trigger the Lambda Function
+Navigate Back to the S3 Console:
+
+Go to your S3 bucket (my-file-rename-bucket-unique).
+Set Up Event Notification:
+
+Click on "Properties".
+Scroll down to "Event notifications".
+Click "Create event notification".
+Configure the Event:
+
+Name: Enter TriggerLambdaOnUpload.
+Event types: Select "All object create events".
+Prefix/Suffix (Optional):
+Prefix: Enter uploads/ to trigger only when objects are uploaded to the uploads/ folder.
+Suffix: Leave blank or specify file extensions (e.g., .txt, .pdf) if desired.
+Destination: Choose "Lambda Function".
+Function: Select S3FileRenamer from the dropdown.
+Click "Save changes".
+Step 5: Test the Setup
+Upload a Test File to S3:
+
+Via AWS Console:
+
+Navigate to the "Objects" tab in your S3 bucket.
+Click "Upload".
+Add a file (e.g., uploads/testfile.txt).
+Click "Upload".
+
+
+Verify the Renamed File:
+
+Navigate to the renamed/ folder within your S3 bucket.
+You should see a file named similar to testfile_20240126_123456.txt.
