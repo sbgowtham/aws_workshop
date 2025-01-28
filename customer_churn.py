@@ -1,3 +1,4 @@
+#go to Amazon SageMaker AI -> create a note book with full s3 access
 #(predicting customer churn) and the key AWS services utilized (Amazon Aurora for data storage and Amazon SageMaker for machine learning).
 
 import boto3
