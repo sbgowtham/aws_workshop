@@ -1,0 +1,70 @@
+RDS Aurora
+
+Create Cluster 
+
+
+
+Workbench download link  - https://dev.mysql.com/downloads/workbench/
+
+
+a. Using MySQL Workbench (Aurora MySQL-Compatible)
+Open MySQL Workbench.
+
+Create a New Connection:
+
+Click the "+" icon next to "MySQL Connections".
+Configure Connection Settings:
+
+Connection Name: e.g., Aurora MySQL.
+Connection Method: Standard (TCP/IP).
+Hostname: Your Aurora cluster endpoint (e.g., my-aurora-cluster.cluster-xxxxxxxxxxx.us-west-2.rds.amazonaws.com).
+Port: 3306.
+Username: Your master username (e.g., admin).
+Password: Click "Store in Vault…" and enter your master password.
+Test Connection:
+
+Click "Test Connection" to verify connectivity.
+If successful, click "OK" to save the connection.
+Connect:
+
+Double-click on the newly created connection to connect to your Aurora cluster.
+
+
+Security Group 
+===============
+rds cluster -> db instance -> connectivity & security ->vpc security group 
+inbound "mysql/aurora" "myip" 
+
+Set Password 
+
+2. Navigate to the Amazon RDS Service
+Find RDS:
+From the "Services" menu at the top, select "RDS" under the "Database" category.
+3. Select Your Aurora Cluster
+View Databases:
+
+In the RDS Dashboard, click on "Databases" in the left-hand navigation pane.
+Choose Your Cluster:
+
+Locate and click on your Aurora cluster (e.g., my-aurora-cluster) from the list.
+4. Modify the Aurora Cluster to Reset the Password
+Initiate Modification:
+
+With your cluster selected, click on the "Modify" button located at the top right of the "Configuration" section.
+Set New Master Password:
+
+Scroll down to the "Settings" section.
+Master Password: Enter a new, strong password in the "Master password" field.
+Confirm Password: Re-enter the new password in the "Confirm password" field.
+
+
+SQL
+===
+create database test;
+
+use test;
+create table app (sno int);
+
+insert into app values (1);
+
+select * from app;
