@@ -1,0 +1,22 @@
+M1
+
+lsblk
+sudo mkfs -t ext4 /dev/xvdbf
+sudo mkdir /mnt/ebs
+sudo mount /dev/xvdbf /mnt/ebs
+df -h
+echo '/dev/xvdbf /mnt/ebs ext4 defaults,nofail 0 2' | sudo tee -a /etc/fstab
+sudo touch /mnt/ebs/mydata.txt
+echo "Hello AWS EBS" | sudo tee /mnt/ebs/mydata.txt > /dev/null
+cat /mnt/ebs/mydata.txt
+
+
+
+sudo umount /mnt/ebs
+
+detach and attach in the volumes 
+
+M2
+sudo mkdir /mnt/ebs
+sudo mount /dev/xvdbf /mnt/ebs
+cat /mnt/ebs/mydata.txt
