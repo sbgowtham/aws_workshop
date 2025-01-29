@@ -1,0 +1,81 @@
+dynamodb
+
+
+
+
+Via aws cli 
+
+aws configure get region
+
+
+list 
+aws dynamodb list-tables --region us-east-2
+
+
+desc
+aws dynamodb describe-table --table-name zomato --region us-east-2
+
+
+Insert 
+aws dynamodb execute-statement --region us-east-2 --statement "INSERT INTO zomato VALUE {'RestaurantID': '2', 'Name': 'Gourmet Palace', 'Location': 'San Francisco, Downtown', 'Cuisine': ['French', 'Italian'], 'Rating': 4.5, 'CreatedAt': '2025-02-01T10:00:00Z'}"
+
+one the fly column creation "offer"
+
+aws dynamodb execute-statement --region us-east-2 --statement "INSERT INTO zomato VALUE {'RestaurantID': '2', 'Name': 'Gourmet Palace', 'Location': 'San Francisco, Downtown', 'Cuisine': ['French', 'Italian'], 'Rating': 4.5, 'CreatedAt': '2025-02-01T10:00:00Z','offer':'yes'}"
+
+
+aws dynamodb execute-statement  --region us-east-2 --statement "INSERT INTO zomato VALUE {\"RestaurantID\": \"rest125\", \"Name\": \"New Place\", \"Location\": \"Chicago, Downtown\", \"Cuisine\": [\"American\"], \"Rating\": 4.0, \"CreatedAt\": \"2025-03-01T12:00:00Z\"}"
+
+partiql
+INSERT INTO zomato VALUE { 'RestaurantID': 'rest125'}
+
+==============
+scan
+
+aws dynamodb scan --table-name zomato --region us-east-2
+
+
+scan a particular column 
+
+aws dynamodb scan --table-name zomato --region us-east-2 --projection-expression "Cuisine"
+	
+partiql
+
+aws dynamodb execute-statement  --region us-east-2  --statement "SELECT RestaurantID, Name, Location FROM zomato "
+====================
+
+Limit 
+
+aws dynamodb scan  --table-name zomato --region us-east-2  --projection-expression "RestaurantID, #n, #l" --expression-attribute-names "{\"#n\":\"Name\", \"#l\":\"Location\"}"  --limit 2
+	
+aws dynamodb scan --table-name zomato --region us-east-2 --limit 1
+
+aws dynamodb scan --table-name zomato --region us-east-2 --projection-expression "Cuisine" --limit 5
+
+
+Some basic data analytics
+
+aws dynamodb scan --table-name zomato --region us-east-2 --select "COUNT"
+
+
+aws dynamodb execute-statement --region us-east-2 --statement "SELECT RestaurantID, Name, Location FROM zomato WHERE Location = 'New York'"
+
+
+
+aws dynamodb execute-statement --region us-east-2 --statement "SELECT RestaurantID, Name, OpeningHours FROM zomato WHERE OpeningHours > '22:00'"
+
+
+
+aws dynamodb execute-statement --region us-east-2 --statement "SELECT RestaurantID, Name, Rating FROM zomato WHERE Rating > 4.5 AND Location = 'San Francisco'"
+
+
+Fileter
+
+aws dynamodb scan --table-name zomato --region us-east-2 --filter-expression "Cuisine = :c" --expression-attribute-values "{\":c\": {\"S\": \"Italian\"}}" --select "COUNT"
+
+
+
+aws dynamodb query --table-name zomato  --key-condition-expression "RestaurantID = :rid " --expression-attribute-values "{\":rid\": {\"S\": \"rest123\"}}" --region us-east-2
+
+
+
