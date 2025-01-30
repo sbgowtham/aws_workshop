@@ -1,0 +1,114 @@
+
+Step 1: Create a Kinesis Data Stream
+Go to the AWS Management Console.
+Navigate to Amazon Kinesis → Data Streams.
+Click "Create Data Stream".
+Name the stream: clickstream-data
+Set Shard count = 1 (for simplicity).
+Click "Create Stream".
+
+Code Producer 
+
+import boto3
+import json
+import random
+import time
+
+# AWS Region
+AWS_REGION = "us-east-1"
+
+# Kinesis Stream Name
+STREAM_NAME = "clickstream-data"
+
+# Initialize Kinesis client
+kinesis_client = boto3.client("kinesis", region_name=AWS_REGION)
+
+# Function to generate random click event
+def generate_click_event():
+    users = ["user1", "user2", "user3", "user4"]
+    pages = ["/home", "/product", "/cart", "/checkout"]
+    
+    event = {
+        "user_id": random.choice(users),
+        "page": random.choice(pages),
+        "timestamp": time.time()
+    }
+    return json.dumps(event)
+
+# Continuously send data
+while True:
+    click_event = generate_click_event()
+    print(f"Sending: {click_event}")
+
+    # Send data to Kinesis
+    response = kinesis_client.put_record(
+        StreamName=STREAM_NAME,
+        Data=click_event,
+        PartitionKey="partition-1"
+    )
+    
+    print(f"Record sent! Sequence Number: {response['SequenceNumber']}")
+    
+    # Send data every 2 seconds
+    time.sleep(2)
+
+
+Step 3: Process Data Using AWS Lambda
+Now, set up AWS Lambda to consume and process data from Kinesis.
+
+Go to AWS Lambda → Create a function.
+Select "Author from scratch".
+Function name: process_clickstream
+Runtime: Python 3.x
+Create the function.
+Under Triggers, click "Add Trigger" → Select Kinesis.
+Choose the stream clickstream-data.
+Set the Batch Size to 1.
+Click "Add".
+
+
+Lambda
+import json
+import base64
+
+def lambda_handler(event, context):
+    try:
+        for record in event['Records']:
+            # Decode the Kinesis data from Base64
+            payload = base64.b64decode(record['kinesis']['data']).decode("utf-8")
+
+            # Debugging: Print raw payload to check if it's empty
+            print(f"Raw Payload: {payload}")
+
+            # Ensure payload is not empty before parsing
+            if not payload.strip():
+                print("Received an empty payload! Skipping...")
+                continue
+
+            # Convert payload to JSON
+            click_event = json.loads(payload)
+            print(f"Processing Click Event: {click_event}")
+
+        return {"statusCode": 200, "body": "Processed Click Events"}
+
+    except json.JSONDecodeError as e:
+        print(f"JSONDecodeError: {e}")
+        print("Skipping invalid record.")
+        return {"statusCode": 400, "body": "Error processing record"}
+
+
+Step 1: Find the IAM Role Attached to Lambda
+Go to the AWS Lambda console.
+Click on your function process_clickstream.
+Scroll down to the Execution role section.
+Click on the role name to open the IAM Console.
+
+Step 2: Add Permissions to Access Kinesis
+In the IAM Console, go to the Permissions tab.
+Click Attach policies.
+Search for AWSLambdaKinesisExecutionRole.
+Select the policy and click Attach policy.
+
+To see the logs
+Cloud Watch - /aws/lambda/process_clickstream 
+
