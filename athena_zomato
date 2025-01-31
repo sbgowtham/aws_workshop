@@ -47,21 +47,20 @@ LOCATION 's3://your-bucket/zomato/customers/';
 
 restaurants.csv
 
-restaurant_id,name,location,cuisine,avg_rating,num_reviews
 R001,Spicy Bites,Chennai,Indian,4.5,120
 R002,Pasta House,Bangalore,Italian,4.2,95
 R003,Grill Masters,Hyderabad,BBQ,4.8,200
 R004,Cafe Mocha,Delhi,Cafe,4.0,80
 
 orders.csv
-order_id,customer_id,restaurant_id,order_total,order_status,order_time,delivery_time,payment_mode
+
 O1001,C001,R001,450.75,Delivered,2024-01-15 18:30:00,2024-01-15 19:00:00,Online
 O1002,C002,R002,850.00,Cancelled,2024-01-16 13:00:00,2024-01-16 13:30:00,Cash
 O1003,C003,R003,1200.50,Delivered,2024-01-17 20:00:00,2024-01-17 20:45:00,Card
 
 
 customers.csv
-customer_id,name,email,phone,location,loyalty_points
+
 C001,Rajesh,rajesh@email.com,9876543210,Chennai,500
 C002,Megha,megha@email.com,9898989898,Bangalore,300
 C003,Arun,arun@email.com,9765432109,Hyderabad,1000
