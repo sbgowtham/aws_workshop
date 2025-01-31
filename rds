@@ -1,0 +1,124 @@
+Dating app use case
+
+
+Users Table - Storing User Information
+
+
+
+
+CREATE TABLE users (
+    user_id INT PRIMARY KEY,
+    name VARCHAR(50),
+    age INT,
+    gender VARCHAR(10),
+    location VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+INSERT INTO users (user_id, name, age, gender, location) VALUES
+(1, 'Amit', 25, 'Male', 'Mumbai'),
+(2, 'Sana', 23, 'Female', 'Delhi'),
+(3, 'Rahul', 27, 'Male', 'Bangalore'),
+(4, 'Megha', 26, 'Female', 'Mumbai'),
+(5, 'Vikram', 24, 'Male', 'Chennai'),
+(6, 'Anjali', 22, 'Female', 'Hyderabad');
+
+
+Swipes Table - Tracking Swiping Activity
+CREATE TABLE swipes (
+    swipe_id INT PRIMARY KEY,
+    swiper_id INT,  -- Who swiped
+    swiped_id INT,  -- Who was swiped
+    swipe_action VARCHAR(10), -- 'right' (like) or 'left' (reject)
+    swipe_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (swiper_id) REFERENCES users(user_id),
+    FOREIGN KEY (swiped_id) REFERENCES users(user_id)
+);
+
+
+INSERT INTO swipes (swipe_id, swiper_id, swiped_id, swipe_action) VALUES
+(1, 1, 2, 'right'), -- Amit liked Sana
+(2, 2, 1, 'right'), -- Sana liked Amit (match!)
+(3, 3, 4, 'right'), -- Rahul liked Megha
+(4, 4, 3, 'left'),  -- Megha rejected Rahul
+(5, 5, 6, 'right'), -- Vikram liked Anjali
+(6, 6, 5, 'right'); -- Anjali liked Vikram (match!)
+
+
+
+Matches Table - Successful Matches
+
+CREATE TABLE matches (
+    match_id INT PRIMARY KEY,
+    user1 INT,
+    user2 INT,
+    match_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user1) REFERENCES users(user_id),
+    FOREIGN KEY (user2) REFERENCES users(user_id)
+);
+
+
+
+INSERT INTO matches (match_id, user1, user2) VALUES
+(1, 1, 2), -- Amit and Sana matched
+(2, 5, 6); -- Vikram and Anjali matched
+
+
+
+
+Total Swipes Count
+
+SELECT swipe_action, COUNT(*) AS total_swipes
+FROM swipes
+GROUP BY swipe_action;
+
+
+Top 3 Most Swiped Users (Popular Profiles
+
+SELECT swiped_id, COUNT(*) AS swipe_count
+FROM swipes
+GROUP BY swiped_id
+ORDER BY swipe_count DESC
+LIMIT 3;
+
+
+Match Success Rate (%)
+
+SELECT 
+    (SELECT COUNT(*) FROM matches) * 100.0 / (SELECT COUNT(*) FROM swipes WHERE swipe_action = 'right') 
+    AS match_success_rate;
+
+
+Most Liked Gender
+
+
+                         
+SELECT u.gender, COUNT(*) AS likes_received
+FROM swipes s
+JOIN users u ON s.swiped_id = u.user_id
+WHERE s.swipe_action = 'right'
+GROUP BY u.gender
+ORDER BY likes_received DESC;
+
+
+Cities with the Highest Match Rates
+
+SELECT u.location, COUNT(m.match_id) AS total_matches
+FROM matches m
+JOIN users u ON m.user1 = u.user_id
+GROUP BY u.location
+ORDER BY total_matches DESC;
+
+
+
+ User with the Most Right Swipes Given
+ 
+ SELECT swiper_id, COUNT(*) AS right_swipes
+FROM swipes
+WHERE swipe_action = 'right'
+GROUP BY swiper_id
+ORDER BY right_swipes DESC
+LIMIT 1;
+
+
