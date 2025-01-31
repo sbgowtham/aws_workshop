@@ -1,0 +1,147 @@
+Zomato
+
+CREATE EXTERNAL TABLE IF NOT EXISTS zomato_db.restaurants (
+    restaurant_id STRING,
+    name STRING,
+    location STRING,
+    cuisine STRING,
+    avg_rating FLOAT,
+    num_reviews INT
+)
+ROW FORMAT DELIMITED 
+FIELDS TERMINATED BY ',' 
+STORED AS TEXTFILE 
+LOCATION 's3://your-bucket/zomato/restaurants/';
+
+CREATE EXTERNAL TABLE IF NOT EXISTS zomato_db.orders (
+    order_id STRING,
+    customer_id STRING,
+    restaurant_id STRING,
+    order_total FLOAT,
+    order_status STRING,
+    order_time TIMESTAMP,
+    delivery_time TIMESTAMP,
+    payment_mode STRING
+)
+ROW FORMAT DELIMITED 
+FIELDS TERMINATED BY ',' 
+STORED AS TEXTFILE 
+LOCATION 's3://your-bucket/zomato/orders/';
+
+
+
+CREATE EXTERNAL TABLE IF NOT EXISTS zomato_db.customers (
+    customer_id STRING,
+    name STRING,
+    email STRING,
+    phone STRING,
+    location STRING,
+    loyalty_points INT
+)
+ROW FORMAT DELIMITED 
+FIELDS TERMINATED BY ',' 
+STORED AS TEXTFILE 
+LOCATION 's3://your-bucket/zomato/customers/';
+
+
+
+restaurants.csv
+
+restaurant_id,name,location,cuisine,avg_rating,num_reviews
+R001,Spicy Bites,Chennai,Indian,4.5,120
+R002,Pasta House,Bangalore,Italian,4.2,95
+R003,Grill Masters,Hyderabad,BBQ,4.8,200
+R004,Cafe Mocha,Delhi,Cafe,4.0,80
+
+orders.csv
+order_id,customer_id,restaurant_id,order_total,order_status,order_time,delivery_time,payment_mode
+O1001,C001,R001,450.75,Delivered,2024-01-15 18:30:00,2024-01-15 19:00:00,Online
+O1002,C002,R002,850.00,Cancelled,2024-01-16 13:00:00,2024-01-16 13:30:00,Cash
+O1003,C003,R003,1200.50,Delivered,2024-01-17 20:00:00,2024-01-17 20:45:00,Card
+
+
+customers.csv
+customer_id,name,email,phone,location,loyalty_points
+C001,Rajesh,rajesh@email.com,9876543210,Chennai,500
+C002,Megha,megha@email.com,9898989898,Bangalore,300
+C003,Arun,arun@email.com,9765432109,Hyderabad,1000
+
+
+
+Find Top 5 Restaurants by Average Rating
+
+SELECT name, location, cuisine, avg_rating, num_reviews
+FROM zomato_db.restaurants
+ORDER BY avg_rating DESC
+LIMIT 5;
+
+
+Calculate Total Revenue per Restaurant
+
+SELECT r.name, SUM(o.order_total) AS total_revenue
+FROM zomato_db.orders o
+JOIN zomato_db.restaurants r
+ON o.restaurant_id = r.restaurant_id
+WHERE o.order_status = 'Delivered'
+GROUP BY r.name
+ORDER BY total_revenue DESC;
+
+
+Find the Most Preferred Payment Mode
+
+SELECT payment_mode, COUNT(*) AS total_orders
+FROM zomato_db.orders
+GROUP BY payment_mode
+ORDER BY total_orders DESC;
+
+
+
+Find the Restaurant with Maximum Orders 
+
+SELECT r.name, COUNT(o.order_id) AS total_orders
+FROM zomato_db.orders o
+JOIN zomato_db.restaurants r
+ON o.restaurant_id = r.restaurant_id
+GROUP BY r.name
+ORDER BY total_orders DESC
+LIMIT 1;
+
+
+ Calculate Average Delivery Time per Restaurant
+ 
+ SELECT r.name, 
+       AVG(UNIX_TIMESTAMP(o.delivery_time) - UNIX_TIMESTAMP(o.order_time)) / 60 AS avg_delivery_time_mins
+FROM zomato_db.orders o
+JOIN zomato_db.restaurants r
+ON o.restaurant_id = r.restaurant_id
+WHERE o.order_status = 'Delivered'
+GROUP BY r.name
+ORDER BY avg_delivery_time_mins ASC;
+
+
+
+
+
+Find Customers Who Ordered the Most
+
+SELECT c.name AS customer_name, COUNT(o.order_id) AS total_orders
+FROM zomato_db.orders o
+JOIN zomato_db.customers c
+ON o.customer_id = c.customer_id
+GROUP BY c.name
+ORDER BY total_orders DESC
+LIMIT 5;
+
+
+Optimize Data Storage with Parquet
+
+CREATE TABLE zomato_db.orders_parquet 
+WITH (
+    format = 'PARQUET',
+    external_location = 's3://your-bucket/zomato/orders_parquet/'
+) AS 
+SELECT * FROM zomato_db.orders;
+
+
+
+
