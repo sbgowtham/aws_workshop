@@ -18,7 +18,7 @@ import time
 AWS_REGION = "us-east-1"
 
 # Kinesis Stream Name
-STREAM_NAME = "clickstream-data"
+STREAM_NAME = "click_streams"
 
 # Initialize Kinesis client
 kinesis_client = boto3.client("kinesis", region_name=AWS_REGION)
