@@ -1,0 +1,44 @@
+CREATE DATABASE mydatabase;
+
+CREATE EXTERNAL TABLE mydatabase.csv_table (
+    id INT,
+    name STRING,
+    value DOUBLE
+) 
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LOCATION 's3://storage-types-sbg/csv/';
+
+select count(*) From mydatabase.csv_table;
+
+
+-- ORC Table
+CREATE EXTERNAL TABLE orc_table (
+    id INT,
+    name STRING,
+    value DOUBLE
+) 
+STORED AS ORC
+LOCATION 's3://storage-types-sbg/orc1/';
+
+insert into orc_table select * from mydatabase.csv_table 
+
+-- Parquet Table
+CREATE EXTERNAL TABLE parquet_table (
+    id INT,
+    name STRING,
+    value DOUBLE
+) 
+STORED AS PARQUET
+LOCATION 's3://storage-types-sbg/par/';
+
+
+select * From mydatabase.csv_table limit 2;
+select * From orc_table limit 2;
+select * From parquet_table limit 2;
+
+select count(*) From mydatabase.csv_table ;
+select count(*)  From orc_table ;
+select count(*)  From parquet_table ;
+
+
